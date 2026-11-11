@@ -52,7 +52,9 @@ ensure_vendored_backend() {
   fi
 }
 
-pkill -x "$APP_NAME" >/dev/null 2>&1 || true
+if [[ "$MODE" != "--build-only" ]]; then
+  pkill -x "$APP_NAME" >/dev/null 2>&1 || true
+fi
 
 mkdir -p "$DIST_DIR"
 ensure_vendored_backend
@@ -67,6 +69,7 @@ swiftc \
   "$ROOT_DIR/Sources/MLXLoRAStudio/Support/LiveMemoryMonitor.swift" \
   "$ROOT_DIR/Sources/MLXLoRAStudio/Stores/AppStore.swift" \
   "$ROOT_DIR/Sources/MLXLoRAStudio/Services/PythonJobRunner.swift" \
+  "$ROOT_DIR/Sources/MLXLoRAStudio/Services/ChatSession.swift" \
   "$ROOT_DIR/Sources/MLXLoRAStudio/Services/PythonEnvironmentDiscovery.swift" \
   "$ROOT_DIR/Sources/MLXLoRAStudio/Services/PythonEnvironmentProvisioner.swift" \
   "$ROOT_DIR/Sources/MLXLoRAStudio/Services/ProviderModelCatalog.swift" \
@@ -78,6 +81,7 @@ swiftc \
   "$ROOT_DIR/Sources/MLXLoRAStudio/Services/MCPRunDashboardReader.swift" \
   "$ROOT_DIR/Sources/MLXLoRAStudio/Services/MCPCommunitySkillInstaller.swift" \
   "$ROOT_DIR/Sources/MLXLoRAStudio/Views/ContentView.swift" \
+  "$ROOT_DIR/Sources/MLXLoRAStudio/Views/ChatView.swift" \
   "$ROOT_DIR/Sources/MLXLoRAStudio/Views/OnboardingTourView.swift" \
   "$ROOT_DIR/Sources/MLXLoRAStudio/Views/SidebarView.swift" \
   "$ROOT_DIR/Sources/MLXLoRAStudio/Views/TrainingView.swift" \
@@ -386,6 +390,10 @@ publish_github_release() {
 }
 
 case "$MODE" in
+  --build-only)
+    codesign_app
+    echo "Built $APP_BUNDLE (not launched)"
+    ;;
   run)
     codesign_app
     open_app
@@ -426,7 +434,7 @@ case "$MODE" in
     publish_github_release
     ;;
   *)
-    echo "usage: $0 [run|--debug|--logs|--telemetry|--verify|--package|--release-assets|--release-package [version]]" >&2
+    echo "usage: $0 [run|--build-only|--debug|--logs|--telemetry|--verify|--package|--release-assets|--release-package [version]]" >&2
     exit 2
     ;;
 esac

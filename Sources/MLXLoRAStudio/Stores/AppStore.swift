@@ -19,6 +19,7 @@ final class AppStore {
     var hfUploadRunner = PythonJobRunner()
     var packageRunner = PythonJobRunner()
     var mcpServer = MCPServerController()
+    var chat = ChatSession()
     var runs: [RunRecord] = []
     var queuedTrainingRuns: [QueuedTrainingRun] = []
     /// Runs that the runner has written to the output root in previous
@@ -512,12 +513,14 @@ final class AppStore {
             await startSynthetic()
         case .upload:
             await startHFUpload()
-        case .metrics, .guide, .runs, .mcp, .about:
+        case .metrics, .chat, .guide, .runs, .mcp, .about:
             break
         }
     }
 
     func startTraining(config runConfig: TrainingConfig? = nil) async {
+        // Chat and training share the GPU; release inference weights first.
+        chat.unload()
         let config = runConfig ?? training
         let runID = UUID()
         do {
@@ -746,7 +749,7 @@ final class AppStore {
             hfUploadRunner
         case .metrics:
             trainingRunner
-        case .guide, .runs, .mcp, .about:
+        case .chat, .guide, .runs, .mcp, .about:
             nil
         }
     }
@@ -763,7 +766,7 @@ final class AppStore {
         switch selection {
         case .train, .synthetic, .upload:
             true
-        case .metrics, .guide, .runs, .mcp, .about:
+        case .metrics, .chat, .guide, .runs, .mcp, .about:
             false
         }
     }

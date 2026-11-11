@@ -47,16 +47,20 @@ struct MLXLoRAStudioApp: App {
                 // pages has its own Start / Cancel pill at the
                 // top.
                 Button(commandTitle) {
-                    Task { await store.toggleTrainingPlayback() }
+                    if store.selection == .chat {
+                        if !store.trainingRunner.isRunning { store.chat.send() }
+                    } else {
+                        Task { await store.toggleTrainingPlayback() }
+                    }
                 }
                 .keyboardShortcut(.return, modifiers: [.command])
-                .disabled(!store.trainingRunner.isRunning && !store.canStartSelectedJob)
+                .disabled(store.selection == .chat ? (!store.chat.canSend || store.trainingRunner.isRunning) : (!store.trainingRunner.isRunning && !store.canStartSelectedJob))
 
                 Button("Stop Job") {
-                    store.trainingRunner.stop()
+                    if store.selection == .chat { store.chat.stop() } else { store.trainingRunner.stop() }
                 }
                 .keyboardShortcut(".", modifiers: [.command])
-                .disabled(!store.trainingRunner.isRunning)
+                .disabled(store.selection == .chat ? !store.chat.isGenerating : !store.trainingRunner.isRunning)
             }
         }
 
@@ -67,6 +71,7 @@ struct MLXLoRAStudioApp: App {
     }
 
     private var commandTitle: String {
+        if store.selection == .chat { return "Send Message" }
         // Mirrors the toolbar — always reflects the training runner.
         guard store.trainingRunner.isRunning else {
             return "Start Job"

@@ -64,6 +64,8 @@ struct ContentView: View {
             TrainingView(store: store)
         case .metrics:
             LiveMetricsView(runner: store.trainingRunner)
+        case .chat:
+            ChatView(store: store, chat: store.chat)
         case .synthetic:
             RunsView(store: store)
         case .upload:

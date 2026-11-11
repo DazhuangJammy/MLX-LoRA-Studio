@@ -221,8 +221,9 @@ See [Building from source](#building-from-source) below.
 
 ## A guided tour of the app
 
-The sidebar has six main views: Train, Live Metrics, Upload to HF, Algorithm Guide, Runs,
-and MCP Server. About and Settings are available from the app interface.
+The sidebar has seven main views: Train, Live Metrics, Chat, Upload to HF, Algorithm Guide, Runs,
+and MCP Server. [Chat](docs/Chat.md) loads a local model with an optional LoRA for streaming conversations,
+with thinking controls on supported models and an adjustable output limit. About and Settings are available from the app interface.
 
 ### Train
 

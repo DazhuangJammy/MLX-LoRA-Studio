@@ -4,6 +4,7 @@ import Observation
 enum SidebarSection: String, CaseIterable, Identifiable {
     case train
     case metrics
+    case chat
     case synthetic
     case upload
     case guide
@@ -16,6 +17,7 @@ enum SidebarSection: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .train: "Train"
+        case .chat: "Chat"
         case .metrics: "Live Metrics"
         case .synthetic: "Synthetic Data (Legacy)"
         case .upload: "Upload to HF"
@@ -29,6 +31,7 @@ enum SidebarSection: String, CaseIterable, Identifiable {
     var symbol: String {
         switch self {
         case .train: "cpu"
+        case .chat: "bubble.left.and.bubble.right"
         case .metrics: "chart.line.uptrend.xyaxis"
         case .synthetic: "sparkles"
         case .upload: "arrow.up.circle"
